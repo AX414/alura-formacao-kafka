@@ -27,16 +27,18 @@ public class NewOrderMain {
         //Adicionando o callback para ter a mensagem de sucesso ou falha
         producer.send(record, (data, ex) -> {
             if (ex != null) {
-                System.out.println(ANSI_RED + "\nErro no envio da mensagem: ");
+                System.out.println(ANSI_RED + "\nERRO.: Erro no envio da mensagem: ");
                 ex.printStackTrace();
                 return;
             }
-            System.out.println(ANSI_GREEN + "\nSucesso no envio da mensagem:" + ANSI_RESET
-                    + ANSI_YELLOW + "\nTópico: " + ANSI_RESET + data.topic()
-                    + ANSI_YELLOW + "\nPartição: " + ANSI_RESET + data.partition()
-                    + ANSI_YELLOW + "\nOffset: " + ANSI_RESET + data.offset()
-                    + ANSI_YELLOW + "\nTimeStamp: " + ANSI_RESET + data.timestamp()
-                    + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value()
+            System.out.println(
+                    ANSI_GREEN + "\n.:Sucesso no envio da mensagem:.\n--------------------------------------------"
+                            + ANSI_YELLOW + "\nTópico: " + ANSI_RESET + data.topic()
+                            + ANSI_YELLOW + "\nPartição: " + ANSI_RESET + data.partition()
+                            + ANSI_YELLOW + "\nOffset: " + ANSI_RESET + data.offset()
+                            + ANSI_YELLOW + "\nTimeStamp: " + ANSI_RESET + data.timestamp()
+                            + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value()
+                            + ANSI_GREEN + "\n--------------------------------------------"
             );
         }).get();
     }
