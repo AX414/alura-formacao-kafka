@@ -21,7 +21,7 @@ public class NewOrderMain {
         for(var i=0; i<100;i++) {
 
             var key = UUID.randomUUID().toString();
-            var value = "UUID: " + key + " + Valor Fixo: 19";
+            var value = "UUID: " + key;
             //O nome do tópico é passado primeiro, mas há diversas variações de ProducerRecord
             var record = new ProducerRecord<>("ECOMMERCE_NEW_ORDER", key, value);
             //Envia a mensagem, o tempo que a mensagem é retida depende da configuração do servidor
