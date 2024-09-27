@@ -13,9 +13,9 @@ import java.util.concurrent.ExecutionException;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
 
-public class KafkaDispatcher implements Closeable {
+public class KafkaDispatcher<T> implements Closeable {
 
-    private final KafkaProducer<String, String> producer;
+    private final KafkaProducer<String, T> producer;
 
     KafkaDispatcher() {
         this.producer = new KafkaProducer<>(properties());
@@ -29,11 +29,11 @@ public class KafkaDispatcher implements Closeable {
         //Tanto a chave, quanto o valor, vão transformar-se em strings,
         //logo eu passo serializadores de strings para bytes
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
         return properties;
     }
 
-    void send(String topic, String key, String value) throws ExecutionException, InterruptedException {
+    void send(String topic, String key, T value) throws ExecutionException, InterruptedException {
         //O nome do tópico é passado primeiro, mas há diversas variações de ProducerRecord
         var record = new ProducerRecord<>(topic, key, value);
         //Envia a mensagem, o tempo que a mensagem é retida depende da configuração do servidor
@@ -50,7 +50,7 @@ public class KafkaDispatcher implements Closeable {
                             + ANSI_YELLOW + "\nPartição: " + ANSI_RESET + data.partition()
                             + ANSI_YELLOW + "\nOffset: " + ANSI_RESET + data.offset()
                             + ANSI_YELLOW + "\nTimeStamp: " + ANSI_RESET + GeneralFunctions.formatar(data.timestamp())
-                            + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value()
+                            + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + value.toString()
                             + ANSI_GREEN + "\n_________________________________________"
             );
         };
