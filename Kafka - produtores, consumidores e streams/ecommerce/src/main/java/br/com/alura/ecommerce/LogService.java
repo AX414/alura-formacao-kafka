@@ -1,7 +1,10 @@
 package br.com.alura.ecommerce;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
@@ -13,7 +16,10 @@ public class LogService {
         try (var service = new KafkaService(
                 LogService.class.getSimpleName(),
                 Pattern.compile("ECOMMERCE.*"),
-                logService::parse)) {
+                logService::parse,
+                String.class,
+                Map.of(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName())
+                )) {
             service.run();
         } catch (Exception e) {
             e.printStackTrace();
