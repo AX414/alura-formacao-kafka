@@ -21,22 +21,19 @@ public class KafkaService<T> implements Closeable {
     private final KafkaConsumer<String, T> consumer;
     private final ConsumerFunction parse;
 
-    KafkaService(String groupId, String topic, ConsumerFunction parse, Class<T> type) {
-        this(parse, groupId, type);
+    KafkaService(String groupId, String topic, ConsumerFunction parse, Class<T> type, Map<String, String> properties) {
+        this(parse, groupId, type, properties);
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    KafkaService(String groupId, Pattern topic, ConsumerFunction parse, Class<T> type) {
-        this(parse, groupId, type);
+    KafkaService(String groupId, Pattern topic, ConsumerFunction parse, Class<T> type, Map<String, String> properties) {
+        this(parse, groupId, type, properties);
         consumer.subscribe(topic);
     }
 
-    private KafkaService(ConsumerFunction parse, String groupId, Class<T> type) {
+    private KafkaService(ConsumerFunction parse, String groupId, Class<T> type, Map<String, String> properties) {
         this.parse = parse;
-        this.consumer = new KafkaConsumer<>(properties(type, groupId));
-    }
-
-    public <K, V> KafkaService(String simpleName, Pattern compile, Object parse, Class<String> stringClass, Map<K,V> valueDeserializerClassConfig) {
+        this.consumer = new KafkaConsumer<>(getProperties(type, groupId, properties));
     }
 
     void run() {
@@ -52,7 +49,7 @@ public class KafkaService<T> implements Closeable {
     }
 
     //Propriedades do consumer
-    private Properties properties(Class<T> type, String groupID) {
+    private Properties getProperties(Class<T> type, String groupID, Map<String, String> overrideProperties) {
         var properties = new Properties();
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         //Producer serializa(transforma de string para byte)
@@ -62,7 +59,7 @@ public class KafkaService<T> implements Closeable {
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupID);
         properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
         properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
-
+        properties.putAll(overrideProperties);
         return properties;
     }
 
