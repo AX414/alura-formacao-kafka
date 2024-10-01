@@ -6,6 +6,7 @@ import java.util.Map;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
 
+
 public class EmailService {
 
     public static void main(String[] args) {

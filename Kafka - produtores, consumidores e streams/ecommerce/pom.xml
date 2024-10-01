@@ -6,13 +6,27 @@
 
     <groupId>br.com.alura</groupId>
     <artifactId>ecommerce</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-
-    <properties>
-        <maven.compiler.source>12</maven.compiler.source>
-        <maven.compiler.target>12</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>12</source>
+                    <target>12</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modules>
+        <module>service-email</module>
+        <module>service-fraud-detector</module>
+        <module>service-log</module>
+        <module>service-new-order</module>
+        <module>common-kafka</module>
+    </modules>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
@@ -35,8 +49,7 @@
             <artifactId>gson</artifactId>
             <version>2.8.6</version>
         </dependency>
-
-
     </dependencies>
+
 
 </project>
