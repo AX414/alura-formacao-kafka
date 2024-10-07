@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class KafkaService<T> implements Closeable {
         this.consumer = new KafkaConsumer<>(getProperties(type, groupId, properties));
     }
 
-    void run() {
+    void run() throws SQLException {
         while (true) {
             var records = consumer.poll(Duration.ofMillis(100));
             if (!records.isEmpty()) {

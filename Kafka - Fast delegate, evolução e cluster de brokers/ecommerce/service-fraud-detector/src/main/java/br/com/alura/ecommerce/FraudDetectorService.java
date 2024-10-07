@@ -50,11 +50,11 @@ public class FraudDetectorService {
 
             System.out.println(ANSI_RED + "Fraude Detectada.");
             orderDispatcher.send("ECOMMERCE_ORDER_REJECTED",
-                    order.getUserID(), order);
+                    order.getEmail(), order);
         } else {
             System.out.println(ANSI_GREEN + "Nenhuma fraude detectada. Pedido processado.");
             orderDispatcher.send("ECOMMERCE_ORDER_APPROVED",
-                    order.getUserID(), order);
+                    order.getEmail(), order);
         }
     }
 

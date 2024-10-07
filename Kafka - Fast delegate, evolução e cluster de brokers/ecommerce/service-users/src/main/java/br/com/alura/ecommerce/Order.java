@@ -3,17 +3,12 @@ package br.com.alura.ecommerce;
 import java.math.BigDecimal;
 
 public class Order {
-    private final String userID, orderID;
+    private final String orderID;
     private final BigDecimal amount;
 
-    public Order(String userID, String orderID, BigDecimal amount) {
-        this.userID = userID;
+    public Order(String orderID, BigDecimal amount) {
         this.orderID = orderID;
         this.amount = amount;
-    }
-
-    public String getUserID() {
-        return userID;
     }
 
     public String getOrderID() {
@@ -27,7 +22,6 @@ public class Order {
     @Override
     public String toString() {
         return "[Order ID: " + orderID
-                + " | User ID: " + userID
                 + " | Amount: " + amount.setScale(2, BigDecimal.ROUND_HALF_EVEN)
                 + "]";
     }
