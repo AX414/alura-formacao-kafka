@@ -30,6 +30,8 @@ public class KafkaDispatcher<T> implements Closeable {
         //logo eu passo serializadores de strings para bytes
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
+        //Quantos são os Oks do servidor que eu quero ter? 'all' significa que quero esperar que todas as réplicas tenham essa info
+        properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
         return properties;
     }
 

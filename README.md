@@ -13,7 +13,7 @@
   <summary>Cursos e Certificações</summary>
 
 - <b>Kafka: Produtores, consumidores e streams</b> | Certificação: <a href="https://cursos.alura.com.br/user/joaovictorlisboaporcel/course/kafka-introducao-a-streams-em-microservicos/certificate">link</a>.
-- <b>Kafka: Fast delegate, evolução e cluster de brokers</b> | Certificação: <a href="">link</a>.
+- <b>Kafka: Fast delegate, evolução e cluster de brokers</b> | Certificação: <a href="https://cursos.alura.com.br/certificate/joaovictorlisboaporcel/kafka-cluster-de-microservicos">link</a>.
 
 </details>
 

@@ -2,6 +2,7 @@ package br.com.alura.ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,10 +18,12 @@ public class CreateUserService {
 
     CreateUserService() throws SQLException {
         String url = "jdbc:sqlite:target/users_database.db";
+        File dbFile = new File(url.replace("jdbc:sqlite:", ""));
+        dbFile.getParentFile().mkdirs(); // Cria os diretórios se não existem
         this.connection = DriverManager.getConnection(url);
         try {
-            connection.createStatement().execute("create table users(" +
-                    "uuid  VARCHAR(200) primary key, " +
+            connection.createStatement().execute("create table if not exists users(" +
+                    "uuid VARCHAR(200) primary key, " +
                     "email VARCHAR(200))");
         } catch (SQLException e) {
             e.printStackTrace();
