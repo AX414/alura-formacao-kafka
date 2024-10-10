@@ -21,8 +21,9 @@ public class CreateUserService {
         File dbFile = new File(url.replace("jdbc:sqlite:", ""));
         dbFile.getParentFile().mkdirs(); // Cria os diretórios se não existem
         this.connection = DriverManager.getConnection(url);
+        this.connection.setAutoCommit(true);
         try {
-            connection.createStatement().execute("create table if not exists users(" +
+            connection.createStatement().execute("create table if not exists Users(" +
                     "uuid VARCHAR(200) primary key, " +
                     "email VARCHAR(200))");
         } catch (SQLException e) {
@@ -62,6 +63,8 @@ public class CreateUserService {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+            }else{
+                System.out.println(ANSI_RED + "\nUsuário já existia no banco de dados.");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -70,19 +73,28 @@ public class CreateUserService {
     }
 
     private void insertNewUser(String email) throws SQLException {
-        var insert = connection.prepareStatement("insert into users (uuid, email) values (?,?)");
-        insert.setString(1, UUID.randomUUID().toString());
+        var uuid = UUID.randomUUID().toString();
+        System.out.println("Generated UUID: " + uuid);
+        var insert = connection.prepareStatement("insert into Users (uuid, email) values (?, ?)");
+        insert.setString(1, uuid);
         insert.setString(2, email);
+
         insert.execute();
-        System.out.println(ANSI_GREEN + "\nUsuário adicionado ao banco de dados.");
+        insert.close(); // Fechar o PreparedStatement
+
+        System.out.println(ANSI_GREEN+"\nUsuário adicionado ao banco de dados.");
     }
 
     private boolean isNewUser(String email) throws SQLException {
-        var exists = connection.prepareStatement("select uuid from users where email = ? limit 1");
+        var exists = connection.prepareStatement("select uuid from Users where email = ? limit 1");
         exists.setString(1, email);
-        var results = exists.executeQuery();
-        return !results.next();
-    }
 
+        var results = exists.executeQuery();
+        boolean userExists = results.next();
+        exists.close(); // Fechar o PreparedStatement
+
+        System.out.println(ANSI_YELLOW+"\nUsuário existe: " + userExists);
+        return !userExists;
+    }
 
 }
