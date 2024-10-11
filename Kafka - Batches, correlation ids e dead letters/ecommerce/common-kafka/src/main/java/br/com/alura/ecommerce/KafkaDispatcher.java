@@ -9,13 +9,14 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
 
 public class KafkaDispatcher<T> implements Closeable {
 
-    private final KafkaProducer<String, T> producer;
+    private final KafkaProducer<String, Message<T>> producer;
 
     KafkaDispatcher() {
         this.producer = new KafkaProducer<>(properties());
@@ -35,7 +36,8 @@ public class KafkaDispatcher<T> implements Closeable {
         return properties;
     }
 
-    void send(String topic, String key, T value) throws ExecutionException, InterruptedException {
+    void send(String topic, String key, T payload) throws ExecutionException, InterruptedException {
+        var value = new Message<>(new CorrelationId(), payload);
         //O nome do tópico é passado primeiro, mas há diversas variações de ProducerRecord
         var record = new ProducerRecord<>(topic, key, value);
         //Envia a mensagem, o tempo que a mensagem é retida depende da configuração do servidor

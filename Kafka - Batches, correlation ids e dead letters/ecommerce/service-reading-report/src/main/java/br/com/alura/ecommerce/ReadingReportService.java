@@ -35,12 +35,12 @@ public class ReadingReportService {
         var target = new File(user.getReportPath());
         try {
             IO.copyTo(SOURCE, target);
-            IO.append(target, "Criado para o usuário " + user.getUuid());
-            System.out.println(ANSI_GREEN + "Arquivo criado em: " + target.getAbsolutePath());
+            IO.append(target, "\nCriado para o usuário: " + user.getUuid());
+            System.out.println(ANSI_YELLOW+ "Arquivo criado em: "+ANSI_RESET+ target.getAbsolutePath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(ANSI_GREEN + "\n_________________________________________");
+        System.out.println(ANSI_GREEN + "_________________________________________");
     }
 
 

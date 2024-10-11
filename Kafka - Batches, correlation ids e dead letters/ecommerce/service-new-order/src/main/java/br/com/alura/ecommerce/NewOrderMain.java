@@ -8,15 +8,17 @@ import static br.com.alura.ecommerce.GeneralFunctions.*;
 
 public class NewOrderMain {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        try (var orderDispatcher = new KafkaDispatcher<Order>()) {
-            try (KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>()) {
+    private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
+    private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>();
 
-                var emailAleatorio = Math.random() + "@email.com";
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        try (KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>()) {
+            try (KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>()) {
 
                 for (var i = 0; i < 10; i++) {
                     var orderID = UUID.randomUUID().toString();
                     var amount = new BigDecimal(Math.random() * 5000 + 1);
+                    var emailAleatorio = UUID.randomUUID()+"@hotmail.com";
 
                     var order = new Order(orderID, amount, emailAleatorio);
                     orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailAleatorio, order);
