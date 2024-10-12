@@ -49,15 +49,16 @@ public class BatchSendMessageService {
     
     private static final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<User>();
 
-    private void parse(ConsumerRecord<String, String> record) throws ExecutionException, InterruptedException, SQLException {
+    private void parse(ConsumerRecord<String, Message<String>> record) throws ExecutionException, InterruptedException, SQLException {
         System.out.println(
                 ANSI_GREEN + "\n.:PROCESSANDO BATCH NOVA:."
                         + ANSI_GREEN + "\n_________________________________________"
                         + ANSI_YELLOW + "\nTópico: " + ANSI_RESET + record.topic()
         );
 
+        var message = record.value();
         for (User u : getAllUsers()) {
-            userDispatcher.send(record.value(), u.getUuid(), u);
+            userDispatcher.send(message.getPayload(), u.getUuid(), u);
         }
 
         System.out.println(ANSI_GREEN + "\n_________________________________________"
