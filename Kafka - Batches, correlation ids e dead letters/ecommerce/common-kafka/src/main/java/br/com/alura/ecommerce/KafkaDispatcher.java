@@ -36,8 +36,8 @@ public class KafkaDispatcher<T> implements Closeable {
         return properties;
     }
 
-    void send(String topic, String key, T payload) throws ExecutionException, InterruptedException {
-        var value = new Message<>(new CorrelationId(), payload);
+    void send(String topic, String key, CorrelationId id, T payload) throws ExecutionException, InterruptedException {
+        var value = new Message<>(id, payload);
         //O nome do tópico é passado primeiro, mas há diversas variações de ProducerRecord
         var record = new ProducerRecord<>(topic, key, value);
         //Envia a mensagem, o tempo que a mensagem é retida depende da configuração do servidor

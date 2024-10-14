@@ -60,11 +60,11 @@ public class NewOrderServlet extends HttpServlet {
             }
 
             var order = new Order(orderID, amount, emailDoParametro);
-            orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailDoParametro, order);
+            orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailDoParametro, new CorrelationId(NewOrderServlet.class.getSimpleName()),order);
 
             var emailTemplate = "Bem-vindo! Estamos processando o seu pedido!"
                     + ANSI_YELLOW + "\nPedido: " + ANSI_RESET + orderID;
-            emailDispatcher.send("ECOMMERCE_SEND_EMAIL", emailDoParametro, emailTemplate);
+            emailDispatcher.send("ECOMMERCE_SEND_EMAIL", emailDoParametro, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailTemplate);
 
             System.out.println(ANSI_GREEN + "\nNova ordem processada.");
             resp.setStatus(HttpServletResponse.SC_OK);

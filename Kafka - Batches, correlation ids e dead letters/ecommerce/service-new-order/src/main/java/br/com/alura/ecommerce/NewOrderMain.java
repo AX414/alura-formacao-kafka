@@ -21,11 +21,11 @@ public class NewOrderMain {
                     var emailAleatorio = UUID.randomUUID()+"@hotmail.com";
 
                     var order = new Order(orderID, amount, emailAleatorio);
-                    orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailAleatorio, order);
+                    orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailAleatorio, new CorrelationId(NewOrderMain.class.getSimpleName()), order);
 
                     var emailTemplate = "Bem-vindo! Estamos processando o seu pedido!"
                             + ANSI_YELLOW + "\nPedido: " + ANSI_RESET + orderID;
-                    emailDispatcher.send("ECOMMERCE_SEND_EMAIL", emailAleatorio, emailTemplate);
+                    emailDispatcher.send("ECOMMERCE_SEND_EMAIL", emailAleatorio, new CorrelationId(NewOrderMain.class.getSimpleName()), emailTemplate);
                 }
             }
         } catch (Exception e) {

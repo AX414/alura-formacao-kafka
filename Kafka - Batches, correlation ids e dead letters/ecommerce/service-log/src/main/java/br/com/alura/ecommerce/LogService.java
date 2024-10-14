@@ -26,7 +26,7 @@ public class LogService {
         }
     }
 
-    private void parse(ConsumerRecord<String, String> record) {
+    private void parse(ConsumerRecord<String, Message<String>> record) {
         System.out.println(
                 ANSI_GREEN + "\n.:MENSAGEM RECEBIDA PARA O LOG:.\n_________________________________________"
                         + ANSI_YELLOW + "\nTópico: " + ANSI_RESET + record.topic()

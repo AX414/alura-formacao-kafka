@@ -45,17 +45,18 @@ public class CreateUserService {
         }
     }
 
-    private void parse(ConsumerRecord<String, Order> record) throws ExecutionException, InterruptedException, SQLException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException, SQLException {
         System.out.println(
                 ANSI_GREEN + "\n.:MENSAGEM RECEBIDA:."
                         + ANSI_GREEN + "\n_________________________________________"
-                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value()
+                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value().getPayload()
                         + ANSI_GREEN + "\n_________________________________________"
                         + ANSI_GREEN + "\nProcessando ordem, checando por novo usuário."
 
         );
 
-        var order = record.value();
+        var message = record.value();
+        var order = message.getPayload();
         try {
             if (isNewUser(order.getEmail())) {
                 try {
