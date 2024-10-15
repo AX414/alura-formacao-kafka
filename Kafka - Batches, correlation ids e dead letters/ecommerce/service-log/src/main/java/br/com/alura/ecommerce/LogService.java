@@ -17,9 +17,7 @@ public class LogService {
                 LogService.class.getSimpleName(),
                 Pattern.compile("ECOMMERCE.*"),
                 logService::parse,
-                String.class,
-                Map.of(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName())
-                )) {
+                Map.of())) {
             service.run();
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,7 +31,7 @@ public class LogService {
                         + ANSI_YELLOW + "\nPartição: " + ANSI_RESET + record.partition()
                         + ANSI_YELLOW + "\nOffset: " + ANSI_RESET + record.offset()
                         + ANSI_YELLOW + "\nTimeStamp: " + ANSI_RESET + GeneralFunctions.formatar(record.timestamp())
-                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value()
+                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value().getPayload()
                         + ANSI_GREEN + "\n_________________________________________"
         );
     }

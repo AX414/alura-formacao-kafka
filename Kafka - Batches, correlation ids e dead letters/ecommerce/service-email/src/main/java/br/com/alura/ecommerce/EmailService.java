@@ -15,7 +15,6 @@ public class EmailService {
                 EmailService.class.getSimpleName(),
                 "ECOMMERCE_SEND_EMAIL",
                 emailService::parse,
-                String.class,
                 Map.of())) {
             service.run();
         } catch (Exception e) {

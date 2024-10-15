@@ -37,7 +37,6 @@ public class CreateUserService {
                 CreateUserService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
                 createUserService::parse,
-                Order.class,
                 Map.of())) {
             service.run();
         } catch (Exception e) {
@@ -49,28 +48,14 @@ public class CreateUserService {
         System.out.println(
                 ANSI_GREEN + "\n.:MENSAGEM RECEBIDA:."
                         + ANSI_GREEN + "\n_________________________________________"
-                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value().getPayload()
+                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value()
                         + ANSI_GREEN + "\n_________________________________________"
                         + ANSI_GREEN + "\nProcessando ordem, checando por novo usuário."
-
         );
-
-        var message = record.value();
-        var order = message.getPayload();
-        try {
-            if (isNewUser(order.getEmail())) {
-                try {
-                    insertNewUser(order.getEmail());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }else{
-                System.out.println(ANSI_RED + "\nUsuário já existia no banco de dados.");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        var order = record.value().getPayload();
+        if(isNewUser(order.getEmail())) {
+            insertNewUser(order.getEmail());
         }
-
     }
 
     private void insertNewUser(String email) throws SQLException {

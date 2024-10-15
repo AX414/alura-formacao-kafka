@@ -18,9 +18,8 @@ public class ReadingReportService {
         var reportService = new ReadingReportService();
         try (var service = new KafkaService<>(
                 ReadingReportService.class.getSimpleName(),
-                "USER_GENERATE_READING_REPORT",
+                "ECOMMERCE_USER_GENERATE_READING_REPORT",
                 reportService::parse,
-                User.class,
                 Map.of())) {
             service.run();
         } catch (Exception e) {
@@ -28,10 +27,11 @@ public class ReadingReportService {
         }
     }
 
-    private void parse(ConsumerRecord<String, User> record) {
+    private void parse(ConsumerRecord<String, Message<User>> record) {
         System.out.println(ANSI_GREEN + "\n.:Gerando relatório:."
                 + ANSI_GREEN + ":.\n_________________________________________");
-        var user = record.value();
+        var message = record.value();
+        var user = message.getPayload();
         var target = new File(user.getReportPath());
         try {
             IO.copyTo(SOURCE, target);

@@ -16,7 +16,6 @@ public class FraudDetectorService {
                 FraudDetectorService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
                 fraudService::parse,
-                Order.class,
                 Map.of())) {
             service.run();
         } catch (Exception e) {
@@ -34,7 +33,7 @@ public class FraudDetectorService {
                         + ANSI_YELLOW + "\nPartição: " + ANSI_RESET + record.partition()
                         + ANSI_YELLOW + "\nOffset: " + ANSI_RESET + record.offset()
                         + ANSI_YELLOW + "\nTimeStamp: " + ANSI_RESET + GeneralFunctions.formatar(record.timestamp())
-                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value()
+                        + ANSI_YELLOW + "\nConteúdo: " + ANSI_RESET + record.value().getPayload()
                         + ANSI_GREEN + "\n_________________________________________"
         );
 
@@ -46,6 +45,7 @@ public class FraudDetectorService {
 
         var message = record.value();
         var order = message.getPayload();
+
         if (isFraud(order)) {
             //Fingindo que a fraude ocorre se o valor é maior que 4500
 

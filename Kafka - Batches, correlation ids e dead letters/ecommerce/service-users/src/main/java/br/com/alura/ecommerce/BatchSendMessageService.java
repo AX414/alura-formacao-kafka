@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
@@ -39,28 +38,31 @@ public class BatchSendMessageService {
                 BatchSendMessageService.class.getSimpleName(),
                 "ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS",
                 batchService::parse,
-                String.class,
                 Map.of())) {
             service.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    private static final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<User>();
+
+    private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>();
 
     private void parse(ConsumerRecord<String, Message<String>> record) throws ExecutionException, InterruptedException, SQLException {
+        var message = record.value();
         System.out.println(
                 ANSI_GREEN + "\n.:PROCESSANDO BATCH NOVA:."
                         + ANSI_GREEN + "\n_________________________________________"
-                        + ANSI_YELLOW + "\nTópico: " + ANSI_RESET + record.topic()
+                        + ANSI_YELLOW + "\nTópico: " + ANSI_RESET + message.getPayload()
         );
 
-        var message = record.value();
-        for (User u : getAllUsers()) {
-            userDispatcher.send(message.getPayload(),
-                    u.getUuid(),
-                    message.getId().continueWith(BatchSendMessageService.class.getSimpleName()), u);
+        try {
+            for (User u : getAllUsers()) {
+                userDispatcher.send(message.getPayload(),
+                        u.getUuid(),
+                        message.getId().continueWith(BatchSendMessageService.class.getSimpleName()), u);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
         System.out.println(ANSI_GREEN + "\n_________________________________________"
