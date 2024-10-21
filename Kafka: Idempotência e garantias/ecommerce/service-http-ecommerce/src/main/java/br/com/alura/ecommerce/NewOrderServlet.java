@@ -1,12 +1,12 @@
 package br.com.alura.ecommerce;
 
+import br.com.alura.ecommerce.dispatcher.KafkaDispatcher;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.eclipse.jetty.servlet.Source;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -57,10 +57,6 @@ public class NewOrderServlet extends HttpServlet {
 
             var order = new Order(orderID, amount, emailDoParametro);
             orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailDoParametro, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
-
-            var emailTemplate = "Bem-vindo! Estamos processando o seu pedido!"
-                    + ANSI_YELLOW + "\nPedido: " + ANSI_RESET + orderID;
-            emailDispatcher.send("ECOMMERCE_SEND_EMAIL", emailDoParametro, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailTemplate);
 
             System.out.println(ANSI_GREEN + "\nNova ordem processada.");
             resp.setStatus(HttpServletResponse.SC_OK);

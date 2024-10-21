@@ -1,8 +1,8 @@
 package br.com.alura.ecommerce;
 
-import java.io.IOException;
+import br.com.alura.ecommerce.dispatcher.KafkaDispatcher;
+
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -15,20 +15,14 @@ public class NewOrderMain {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         try (KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>()) {
-            try (KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>()) {
+            for (var i = 0; i < 10; i++) {
+                var orderID = UUID.randomUUID().toString();
+                var amount = new BigDecimal(Math.random() * 5000 + 1);
+                var emailAleatorio = UUID.randomUUID() + "@hotmail.com";
 
-                for (var i = 0; i < 10; i++) {
-                    var orderID = UUID.randomUUID().toString();
-                    var amount = new BigDecimal(Math.random() * 5000 + 1);
-                    var emailAleatorio = UUID.randomUUID()+"@hotmail.com";
-
-                    var order = new Order(orderID, amount, emailAleatorio);
-                    orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailAleatorio, new CorrelationId(NewOrderMain.class.getSimpleName()), order);
-
-                    var emailTemplate = "Bem-vindo! Estamos processando o seu pedido!"
-                            + ANSI_YELLOW + "\nPedido: " + ANSI_RESET + orderID;
-                    emailDispatcher.send("ECOMMERCE_SEND_EMAIL", emailAleatorio, new CorrelationId(NewOrderMain.class.getSimpleName()), emailTemplate);
-                }
+                var id = new CorrelationId(NewOrderMain.class.getSimpleName());
+                var order = new Order(orderID, amount, emailAleatorio);
+                orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailAleatorio, id, order);
             }
         }
     }

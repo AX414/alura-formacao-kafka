@@ -10,25 +10,25 @@ import java.util.concurrent.ExecutionException;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
 
-public class FraudDetectorService {
+public class EmailNewOrderService {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        var fraudService = new FraudDetectorService();
+        var enoService = new EmailNewOrderService();
         try (var service = new KafkaService<>(
-                FraudDetectorService.class.getSimpleName(),
+                EmailNewOrderService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
-                fraudService::parse,
+                enoService::parse,
                 Map.of())) {
             service.run();
         }
     }
 
-    private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
+    private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>();
 
     private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException {
         System.out.println(
                 ANSI_GREEN + "\n.:MENSAGEM RECEBIDA - "
-                        + ANSI_YELLOW + " CHECANDO FRAUDE"
+                        + ANSI_YELLOW + " PREPARANDO EMAIL"
                         + ANSI_GREEN + ":.\n_________________________________________"
                         + ANSI_YELLOW + "\nPartição: " + ANSI_RESET + record.partition()
                         + ANSI_YELLOW + "\nOffset: " + ANSI_RESET + record.offset()
@@ -37,32 +37,14 @@ public class FraudDetectorService {
                         + ANSI_GREEN + "\n_________________________________________"
         );
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        var msg = record.value();
+        Order order = msg.getPayload();
+        CorrelationId id = msg.getId().continueWith(EmailNewOrderService.class.getSimpleName());
 
-        var message = record.value();
-        var order = message.getPayload();
+        var emailTemplate = "Bem-vindo! Estamos processando o seu pedido!"
+                + ANSI_YELLOW + "\nPedido: " + ANSI_RESET + order.getOrderID();
+        emailDispatcher.send("ECOMMERCE_SEND_EMAIL", order.getEmail(), id, emailTemplate);
 
-        if (isFraud(order)) {
-            //Fingindo que a fraude ocorre se o valor é maior que 4500
-
-            System.out.println(ANSI_RED + "Fraude Detectada.");
-            orderDispatcher.send("ECOMMERCE_ORDER_REJECTED",
-                    order.getEmail(),
-                    message.getId().continueWith(FraudDetectorService.class.getSimpleName()), order);
-        } else {
-            System.out.println(ANSI_GREEN + "Nenhuma fraude detectada. Pedido processado.");
-            orderDispatcher.send("ECOMMERCE_ORDER_APPROVED",
-                    order.getEmail(),
-                    message.getId().continueWith(FraudDetectorService.class.getSimpleName()), order);
-        }
-    }
-
-    private static boolean isFraud(Order order) {
-        return order.getAmount().compareTo(new BigDecimal("4500")) >= 0;
     }
 
 }
