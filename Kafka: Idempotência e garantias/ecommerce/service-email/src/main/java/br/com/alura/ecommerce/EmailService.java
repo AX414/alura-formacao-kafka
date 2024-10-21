@@ -9,20 +9,21 @@ import java.util.concurrent.ExecutionException;
 import static br.com.alura.ecommerce.GeneralFunctions.*;
 
 
-public class EmailService {
+public class EmailService implements ConsumerService<String>{
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        var emailService = new EmailService();
-        try (var service = new KafkaService(
-                EmailService.class.getSimpleName(),
-                "ECOMMERCE_SEND_EMAIL",
-                emailService::parse,
-                Map.of())) {
-            service.run();
-        }
+        new ServiceProvider().run(EmailService::new);
     }
 
-    private void parse(ConsumerRecord<String, Message<String>> record) {
+    public String getConsumerGroup(){
+        return EmailService.class.getSimpleName();
+    }
+
+    public String getTopic(){
+        return "ECOMMERCE_SEND_EMAIL";
+    }
+
+    public void parse(ConsumerRecord<String, Message<String>> record) {
         System.out.println(
                 ANSI_GREEN + "\n.:ENVIANDO EMAIL:.\n_________________________________________"
                         + ANSI_YELLOW + "\nPartição: " + ANSI_RESET + record.partition()
