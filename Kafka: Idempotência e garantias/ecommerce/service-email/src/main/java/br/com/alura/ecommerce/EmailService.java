@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutionException;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
 
-
 public class EmailService implements ConsumerService<String> {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -33,11 +32,6 @@ public class EmailService implements ConsumerService<String> {
                         + ANSI_GREEN + "\n_________________________________________"
         );
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         System.out.println("Email enviado.");
     }
 

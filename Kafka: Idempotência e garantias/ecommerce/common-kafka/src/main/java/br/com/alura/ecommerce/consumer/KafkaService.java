@@ -75,6 +75,8 @@ public class KafkaService<T> implements Closeable {
         properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
         // No máximo uma mensagem por vez
         properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
+        // Se não tem info no offset, começa a partir do offset maior, também poderia ser smallest/largest/disable
+        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
 
         properties.putAll(overrideProperties);
         return properties;

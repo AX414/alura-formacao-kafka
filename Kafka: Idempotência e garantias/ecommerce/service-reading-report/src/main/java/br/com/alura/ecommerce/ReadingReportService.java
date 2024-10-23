@@ -1,14 +1,12 @@
 package br.com.alura.ecommerce;
 
 import br.com.alura.ecommerce.consumer.ConsumerService;
-import br.com.alura.ecommerce.consumer.KafkaService;
 import br.com.alura.ecommerce.consumer.ServiceRunner;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static br.com.alura.ecommerce.GeneralFunctions.*;
