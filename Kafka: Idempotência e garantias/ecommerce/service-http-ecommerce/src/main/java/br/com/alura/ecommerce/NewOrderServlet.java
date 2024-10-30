@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -19,7 +20,6 @@ public class NewOrderServlet extends HttpServlet {
 
     private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
     private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>();
-
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -35,36 +35,42 @@ public class NewOrderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
 
-            var orderID = UUID.randomUUID().toString();
+        var orderID = req.getParameter("uuid");
 
-            String emailDoParametro = req.getParameter("email");
-            BigDecimal amount;
+        String emailDoParametro = req.getParameter("email");
+        BigDecimal amount;
 
-            // Se o email não for fornecido, gera um novo email aleatório
-            if (emailDoParametro == null || emailDoParametro.isBlank()) {
-                emailDoParametro = UUID.randomUUID().toString() + "@hotmail.com";
-            }
-
-            // Se o valor não for fornecido, define um valor padrão
-            String amountParam = req.getParameter("amount");
-            if (amountParam == null || amountParam.isBlank()) {
-                amount = BigDecimal.valueOf(Math.random() * 100).setScale(2, BigDecimal.ROUND_HALF_UP);
-            } else {
-                amount = new BigDecimal(amountParam);
-            }
-
-            var order = new Order(orderID, amount, emailDoParametro);
-            orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailDoParametro, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
-
-            System.out.println(ANSI_GREEN + "\nNova ordem processada.");
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().println("\nNova ordem enviada.");
-        } catch (ExecutionException | InterruptedException e) {
-            throw new ServletException(e);
+        // Se o email não for fornecido, gera um novo email aleatório
+        if (emailDoParametro == null || emailDoParametro.isBlank()) {
+            emailDoParametro = UUID.randomUUID().toString() + "@hotmail.com";
         }
 
+        // Se o valor não for fornecido, define um valor padrão
+        String amountParam = req.getParameter("amount");
+        if (amountParam == null || amountParam.isBlank()) {
+            amount = BigDecimal.valueOf(Math.random() * 100).setScale(2, BigDecimal.ROUND_HALF_UP);
+        } else {
+            amount = new BigDecimal(amountParam);
+        }
+
+        var order = new Order(orderID, amount, emailDoParametro);
+
+
+        try(var database = new OrdersDatabase()) {
+            if (database.saveNewOrder(order)) {
+                orderDispatcher.send("ECOMMERCE_NEW_ORDER", emailDoParametro, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
+                System.out.println(ANSI_GREEN + "\nNova ordem processada.");
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().println("\nNova ordem enviada.");
+            } else {
+                System.out.println(ANSI_RED + "\nOrdem antiga recebida.");
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().println("\nOrdem antiga recebida.");
+            }
+        } catch (SQLException | ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
