@@ -14,6 +14,6 @@
 
 | Formação                                                                    | Certificado                                                                                                                                             |
 | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <b>Mensageria com Apache Kafka</b> | <a href="https://cursos.alura.com.br/certificate/dda2eeb3-6dca-4220-b268-f35a9ab3963a?lang=pt_BR">link</a>                                                  |
+| <b>Mensageria com Apache Kafka</b> | <a href="https://cursos.alura.com.br/degree/certificate/747f45ca-2046-424d-b4c7-eb4c80d13744?lang=pt_BR">link</a>                                                  |
 
 </html>
